@@ -23,6 +23,7 @@ class HashTable:
     def __init__(self, capacity):
         self.bucket_array = [None for i in range(capacity)];
         self.capacity = capacity;
+        self.count = 0;
 
 
     def get_num_slots(self):
@@ -44,7 +45,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return self.count / self.capacity;
 
 
     def fnv1(self, key):
@@ -101,8 +102,10 @@ class HashTable:
                 last_entry = existing_entry
                 existing_entry = existing_entry.next
             last_entry.next = new_entry
+            self.count += 1;
         else:
             self.bucket_array[bucket_index] = new_entry;
+            self.count += 1;
 
 
 
@@ -126,8 +129,10 @@ class HashTable:
                         last_entry.next = existing_entry.next
                     else:
                         self.bucket_array[bucket_index] = existing_entry.next
+                        self.count -= 1;
                     last_entry = existing_entry
                     existing_entry = existing_entry.next
+                    self.count -= 1;
 
 
     def get(self, key):
