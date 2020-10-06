@@ -36,7 +36,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return len(self.bucket_array);
 
 
     def get_load_factor(self):
@@ -167,7 +167,17 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        old_bucket = self.bucket_array
+        self.bucket_array = [None for i in range(new_capacity)];
+
+        for entry in old_bucket:
+            if entry.next == None:
+                self.put(entry.key,entry.value)
+            else:
+                while entry:
+                    self.put(entry.key,entry.value)
+                    entry = entry.next
+
 
 
 
