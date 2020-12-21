@@ -21,7 +21,9 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
+        self.bucket_array = [None for i in range(capacity)];
+        self.capacity = capacity;
+        self.count = 0;
 
 
     def get_num_slots(self):
@@ -34,7 +36,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return len(self.bucket_array);
 
 
     def get_load_factor(self):
@@ -43,7 +45,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return self.count / self.capacity;
 
 
     def fnv1(self, key):
@@ -62,7 +64,12 @@ class HashTable:
 
         Implement this, and/or FNV-1.
         """
-        # Your code here
+        hash = 5381
+        byte_array = key.encode('utf-8');
+
+        for byte in byte_array:
+            hash = ((hash * 33) ^ byte) % 0x100000000
+        return hash
 
 
     def hash_index(self, key):
@@ -81,7 +88,25 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        bucket_index = self.hash_index(key);
+        new_entry = HashTableEntry(key, value);
+
+        existing_entry = self.bucket_array[bucket_index];
+
+        if existing_entry:
+            last_entry = None
+            while existing_entry:
+                if existing_entry.key == key:
+                    existing_entry.value = value
+                    return
+                last_entry = existing_entry
+                existing_entry = existing_entry.next
+            last_entry.next = new_entry
+            self.count += 1;
+        else:
+            self.bucket_array[bucket_index] = new_entry;
+            self.count += 1;
+
 
 
     def delete(self, key):
@@ -92,7 +117,22 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        bucket_index = self.hash_index(key);
+
+        existing_entry = self.bucket_array[bucket_index];
+
+        if existing_entry:
+            last_entry = None
+            while existing_entry:
+                if existing_entry.key == key:
+                    if last_entry:
+                        last_entry.next = existing_entry.next
+                    else:
+                        self.bucket_array[bucket_index] = existing_entry.next
+                        self.count -= 1;
+                    last_entry = existing_entry
+                    existing_entry = existing_entry.next
+                    self.count -= 1;
 
 
     def get(self, key):
@@ -103,7 +143,21 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        bucket_index = self.hash_index(key);
+        existing_entry = self.bucket_array[bucket_index]
+
+        if existing_entry:
+            if existing_entry.next == None:
+                return existing_entry.value
+            else:
+                while existing_entry:
+                    if existing_entry.key == key:
+                        return existing_entry.value
+                    existing_entry = existing_entry.next
+        return None
+
+
+
 
 
     def resize(self, new_capacity):
@@ -113,7 +167,17 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        old_bucket = self.bucket_array
+        self.bucket_array = [None for i in range(new_capacity)];
+
+        for entry in old_bucket:
+            if entry.next == None:
+                self.put(entry.key,entry.value)
+            else:
+                while entry:
+                    self.put(entry.key,entry.value)
+                    entry = entry.next
+
 
 
 
